@@ -46,7 +46,27 @@ const createProduct = async (req, res) => {
 
 const getAllProduct = async (req, res) => {
   try {
-    const allProduct = await Product.find();
+    const { search } = req.query;
+
+    const filter = {};
+
+    if (search) {
+      filter.$or = [
+        {
+          name: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+        {
+          description: {
+            $regex: search,
+            $options: "i",
+          },
+        },
+      ];
+    }
+    const allProduct = await Product.find(filter);
 
     return res.status(200).json({
       allProduct,
